@@ -3,6 +3,12 @@ kind: Application
 metadata:
   name: petclinic
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: spring-petclinic=ghcr.io/raphikri/spring-petclinic
+    argocd-image-updater.argoproj.io/spring-petclinic.update-strategy: semver
+    argocd-image-updater.argoproj.io/spring-petclinic.allow-tags: regexp:^([0-9]+)\.([0-9]+)\.([0-9]+)$
+    argocd-image-updater.argoproj.io/spring-petclinic.helm.image-tag: image.tag
+    argocd-image-updater.argoproj.io/write-back-method: git
 spec:
   project: default
   source:
@@ -11,14 +17,14 @@ spec:
     path: '.'
     helm:
       parameters:
+      - name: "image.tag"
+        value: "4.0.3" # Version de départ
       - name: "app.contextPath"
-        value: "/tp9"
+        value: "/tp11"
   destination:
     server: https://kubernetes.default.svc
-    namespace: tp9-argocd
+    namespace: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
